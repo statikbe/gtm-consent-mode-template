@@ -1,5 +1,5 @@
 homepage: "https://github.com/statikbe/gtm-consent-mode-template"
 documentation: "https://github.com/statikbe/gtm-consent-mode-template/README.MD"
 versions:
-  - sha: 5f02a788b90ae804f86b04aa24af8937e567874a
+  - sha: e151f5af13592c60a3b08d1a9fee5e601d6eec9d
     changeNotes: Initial release.

@@ -1,0 +1,1 @@
+# GTM Consent Mode template

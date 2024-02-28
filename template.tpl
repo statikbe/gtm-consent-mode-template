@@ -10,7 +10,7 @@ ___INFO___
 
 {
   "type": "TAG",
-  "id": "cvt_temp_public_id",
+  "id": "statikbe_gtm_csm",
   "version": 1,
   "securityGroups": [],
   "displayName": "Statik.be cookiebanner - Consent mode",
@@ -119,25 +119,32 @@ const parseCommandData = (settings) => {
     return commandData;
 };
 
-
-const onUserConsent = (consent) => {
-  log("Found consent value: " + consent);
-    let marketing = false;
+const getSettingsFromCookie = () => {
+  const consent = getCookieValues(COOKIE_NAME);
+  log('consent value:' + consent);
+  
+  if(!consent) {
+    return null;
+  }
+  
+  let marketing = false;
     let analytics = false;
   
-    if(consent == true) {
+    if(consent == 'true') {
       marketing = true;
       analytics = true;
-    } else if (consent == 2) {
+    } else if (consent == '2') {
       marketing = false;
       analytics = true;
-    } else if (consent == 3) {
+    } else if (consent == '3') {
       marketing = true;
       analytics = false;
-    } else if (consent == false) {
+    } else if (consent == 'false') {
       marketing = false;
       analytics = false;
     } 
+  
+    log(analytics, marketing);
     const consentModeStates = {
         ad_storage: marketing ? 'granted' : 'denied',
         ad_user_data: marketing ? 'granted' : 'denied',
@@ -147,9 +154,13 @@ const onUserConsent = (consent) => {
         functionality_storage: 'granted',
         security_storage: 'granted',
     };
-  log("setting consent to:");
+  log('returning consent states');
   log(consentModeStates);
-    updateConsentState(consentModeStates);
+  return consentModeStates;
+};
+
+const onUserConsent = (consent) => {
+    updateConsentState(getSettingsFromCookie());
 };
 
 /*
@@ -157,30 +168,29 @@ const onUserConsent = (consent) => {
  *   update callback
  */
 const main = (data) => {
-    /*
-     * Optional settings using gtagSet
-     */
+  log('hier?');
+  
+  const settings = getSettingsFromCookie();
+  
+  if (settings) {
+        setDefaultConsentState(settings);
+  } else {
+
     gtagSet('ads_data_redaction', data.ads_data_redaction);
     gtagSet('url_passthrough', data.url_passthrough);
-    gtagSet('developer_id.your_developer_id', true);
-    // Set default consent state(s)
     data.defaultSettings.forEach(settings => {
         const defaultData = parseCommandData(settings);
-        // wait_for_update (ms) allows for time to receive visitor choices from the CMP
+
         defaultData.wait_for_update = 500;
         setDefaultConsentState(defaultData);
     });
 
+  }
     // Check if cookie is set and has values that correspond to Google consent
     // types. If it does, run onUserConsent().
  // Check if cookie is set and has values that correspond to Google consent
   // types. If it does, run onUserConsent().
-  const settings = getCookieValues(COOKIE_NAME);
-  
-  log(settings);
-  if (typeof settings !== 'undefined') {
-    onUserConsent(settings);
-  }
+
     /**
      *   Add event listener to trigger update when consent changes
      *
@@ -424,7 +434,7 @@ ___WEB_PERMISSIONS___
                   },
                   {
                     "type": 8,
-                    "boolean": true
+                    "boolean": false
                   },
                   {
                     "type": 8,
@@ -455,7 +465,7 @@ ___WEB_PERMISSIONS___
                   },
                   {
                     "type": 8,
-                    "boolean": true
+                    "boolean": false
                   },
                   {
                     "type": 8,
@@ -486,7 +496,7 @@ ___WEB_PERMISSIONS___
                   },
                   {
                     "type": 8,
-                    "boolean": true
+                    "boolean": false
                   },
                   {
                     "type": 8,
@@ -517,7 +527,7 @@ ___WEB_PERMISSIONS___
                   },
                   {
                     "type": 8,
-                    "boolean": true
+                    "boolean": false
                   },
                   {
                     "type": 8,
@@ -548,7 +558,7 @@ ___WEB_PERMISSIONS___
                   },
                   {
                     "type": 8,
-                    "boolean": true
+                    "boolean": false
                   },
                   {
                     "type": 8,
@@ -579,7 +589,7 @@ ___WEB_PERMISSIONS___
                   },
                   {
                     "type": 8,
-                    "boolean": true
+                    "boolean": false
                   },
                   {
                     "type": 8,
@@ -610,7 +620,7 @@ ___WEB_PERMISSIONS___
                   },
                   {
                     "type": 8,
-                    "boolean": true
+                    "boolean": false
                   },
                   {
                     "type": 8,
@@ -638,6 +648,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 27/02/2024, 10:43:08
+Created on 28/02/2024, 14:52:37
 
 
